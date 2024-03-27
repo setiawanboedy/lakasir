@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Tenant\Pages\EditProfile;
 use App\Filament\Tenant\Pages\TenantLogin;
 use App\Filament\Tenant\Resources\CategoryResource;
+use App\Filament\Tenant\Resources\GalleryResource;
 use App\Filament\Tenant\Resources\MemberResource;
 use App\Filament\Tenant\Resources\PermissionResource;
 use App\Filament\Tenant\Resources\ProductResource;
@@ -16,7 +17,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationBuilder;
-use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -53,17 +54,16 @@ class TenantPanelProvider extends PanelProvider
                 return $navigationBuilder
                     ->items([
                         ...Pages\Dashboard::getNavigationItems(),
+                        NavigationItem::make()->label('Master'),
                         ...($user?->can('read member') ? MemberResource::getNavigationItems() : []),
                         ...($user?->can('read category') ? CategoryResource::getNavigationItems() : []),
                         ...($user?->can('read product') ? ProductResource::getNavigationItems() : []),
-                    ])
-                    ->groups([
-                        NavigationGroup::make('User')
-                            ->items([
-                                ...($user?->can('read user') ? UserResource::getNavigationItems() : []),
-                                ...($user?->can('read role') ? RoleResource::getNavigationItems() : []),
-                                ...($user?->can('read permission') ? PermissionResource::getNavigationItems() : []),
-                            ]),
+                        NavigationItem::make()->label('User'),
+                        ...($user?->can('read user') ? UserResource::getNavigationItems() : []),
+                        ...($user?->can('read role') ? RoleResource::getNavigationItems() : []),
+                        ...($user?->can('read permission') ? PermissionResource::getNavigationItems() : []),
+                        NavigationItem::make()->label('Gallery'),
+                        ...GalleryResource::getNavigationItems(),
                     ]);
 
             })
