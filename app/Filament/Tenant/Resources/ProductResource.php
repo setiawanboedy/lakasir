@@ -2,11 +2,13 @@
 
 namespace App\Filament\Tenant\Resources;
 
+use App\Filament\Imports\ProductImporter;
 use App\Filament\Tenant\Resources\ProductResource\Pages;
 use App\Models\Tenants\Product;
 use App\Models\Tenants\Setting;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
@@ -48,6 +50,10 @@ class ProductResource extends Resource
             ])
             ->filters([
                 //
+            ])
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(ProductImporter::class),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

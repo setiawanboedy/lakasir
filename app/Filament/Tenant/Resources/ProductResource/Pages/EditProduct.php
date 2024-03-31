@@ -30,7 +30,7 @@ class EditProduct extends EditRecord
         $this->productService = new ProductService();
     }
 
-    private function getUploadedFileUsing(BaseFileUpload $component, string $file, string|array|null $storedFileNames)
+    private function getUploadedFileUsing(BaseFileUpload $component, string $file)
     {
         /** @var Storage $storage */
         $storage = $component->getDisk();
@@ -76,8 +76,8 @@ class EditProduct extends EditRecord
             $this->generateCategoryFormComponent(),
             $this->generateStockFormComponent(),
             $this->generateUnitFormComponent(),
-            $this->generateSellingPriceFormComponent(),
             $this->generateInitialPriceFormComponent(),
+            $this->generateSellingPriceFormComponent(),
             $this->generateTypeFormComponent()
                 ->columnSpan(1),
             $this->generateNonStockFormComponent(),

@@ -35,8 +35,8 @@ class CreateProduct extends CreateRecord
             $this->generateCategoryFormComponent(),
             $this->generateStockFormComponent(),
             $this->generateUnitFormComponent(),
-            $this->generateSellingPriceFormComponent(),
             $this->generateInitialPriceFormComponent(),
+            $this->generateSellingPriceFormComponent(),
             $this->generateTypeFormComponent(),
             $this->generateNonStockFormComponent(),
         ];
