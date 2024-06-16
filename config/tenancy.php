@@ -17,7 +17,12 @@ return [
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
     'central_domains' => [
-        env('APP_CENTRAL_DOMAIN', 'lakasir.deb'),
+        env('APP_CENTRAL_DOMAIN', null),
+    ],
+
+    'admin_domains' => [
+        'admin.'.env('APP_CENTRAL_DOMAIN', null),
+        env('APP_ADMIN_DOMAIN', null),
     ],
 
     /**
@@ -32,6 +37,7 @@ return [
         Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class,
         // Stancl\Tenancy\Bootstrappers\RedisTenancyBootstrapper::class, // Note: phpredis is needed
+        App\MyBootstrapper::class,
     ],
 
     /**

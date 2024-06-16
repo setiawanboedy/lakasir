@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @mixin IdeHelperUploadedFile
+ */
 class UploadedFile extends Model
 {
     use HasFactory;

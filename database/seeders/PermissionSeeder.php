@@ -6,36 +6,20 @@ use App\Constants\Role;
 use App\Models\Tenants\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class PermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        if (config('database.default') == 'sanctum') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        }
-        DB::table('permissions')->truncate();
-        DB::table('role_has_permissions')->truncate();
-        User::get()->each(fn (User $user) => $this->assignRoleToUser($user));
-
+        $this->deletePermission();
         $permissions = $this->getPermissions();
         $permissions->each(fn ($roles) => $this->savePermission($roles));
-        if (config('database.default') == 'sanctum') {
-            DB::statement('SET FOREIGN_KEY_CHECKS=1');
-        }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
-        User::first()->assignRole(Role::admin);
+        if ($user = User::first()) {
+            $user->assignRole(Role::admin);
+        }
     }
 
     private function crudRolePermission(): array
@@ -80,6 +64,12 @@ class PermissionSeeder extends Seeder
                         ],
                         'guard' => ['web', 'sanctum'],
                     ],
+                    'selling method' => [
+                        'permission' => [
+                            'set',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
                     'payment method' => [
                         'permission' => [
                             'c', 'r', 'u', 'd',
@@ -88,21 +78,21 @@ class PermissionSeeder extends Seeder
                     ],
                     'cash drawer' => [
                         'permission' => [
-                            'open', 'r', 'close',
+                            'open', 'enable', 'close',
                         ],
                         'guard' => ['web', 'sanctum'],
                     ],
-                    'printer' => [
+                    'secure initial price' => [
                         'permission' => [
-                            'c', 'r', 'u', 'd',
-                        ],
-                        'guard' => ['web', 'sanctum'],
-                    ],
-                    'using setting enable secure initial price' => [
-                        'permission' => [
-                            'r',
+                            'enable', 'verify',
                         ],
                         'guard' => ['sanctum'],
+                    ],
+                    'currency' => [
+                        'permission' => [
+                            'u',
+                        ],
+                        'guard' => ['web', 'sanctum'],
                     ],
                     'role' => [
                         'permission' => [
@@ -146,6 +136,84 @@ class PermissionSeeder extends Seeder
                         ],
                         'guard' => ['web'],
                     ],
+                    'default tax' => [
+                        'permission' => [
+                            'set',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'about' => [
+                        'permission' => [
+                            'r', 'u',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'detail initial price' => [
+                        'permission' => [
+                            'r',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'set the minimum stock notification' => [
+                        'permission' => [
+                            '',
+                        ],
+                        'guard' => ['sanctum'],
+                    ],
+                    'purchasing' => [
+                        'permission' => [
+                            'c', 'r', 'u', 'd', 'approve',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'stock opname' => [
+                        'permission' => [
+                            'c', 'r', 'u', 'd', 'approve',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'debt' => [
+                        'permission' => [
+                            'r',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'debt payment' => [
+                        'permission' => [
+                            'c', 'r', 'u', 'd',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'voucher' => [
+                        'permission' => [
+                            'c', 'r', 'u', 'd',
+                        ],
+                        'guard' => ['web', 'sanctum'],
+                    ],
+                    'print selling' => [
+                        'permission' => [
+                            'can',
+                        ],
+                        'guard' => ['web'],
+                    ],
+                    'revenue overview' => [
+                        'permission' => [
+                            'r',
+                        ],
+                        'guard' => ['web'],
+                    ],
+                    'sales overview' => [
+                        'permission' => [
+                            'r',
+                        ],
+                        'guard' => ['web'],
+                    ],
+                    'discount overview' => [
+                        'permission' => [
+                            'r',
+                        ],
+                        'guard' => ['web'],
+                    ],
                 ],
             ],
         ];
@@ -181,7 +249,7 @@ class PermissionSeeder extends Seeder
                 foreach ($actions as $action) {
                     $normalize[] = [
                         'role' => $permissions['role'],
-                        'action' => $action,
+                        'action' => trim($action),
                         'guard' => $crud['guard'],
                     ];
                 }
@@ -213,14 +281,11 @@ class PermissionSeeder extends Seeder
         $role->permissions()->syncWithoutDetaching($permission);
     }
 
-    /**
-     * @return void
-     *
-     * @throws InvalidArgumentException
-     */
-    private function assignRoleToUser(User $user)
+    private function deletePermission()
     {
-        $role = ModelsRole::inRandomOrder()->first();
-        $user->syncRoles($role);
+        Permission::query()
+            ->whereNotIn('name', $this->getPermissions()->pluck('action'))
+            ->where('guard_name', 'web')
+            ->delete();
     }
 }

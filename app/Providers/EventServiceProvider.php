@@ -2,10 +2,23 @@
 
 namespace App\Providers;
 
+use App\Events\RecalculateEvent;
+use App\Events\SellingCreated;
+use App\Listeners\AdjustProduct;
+use App\Listeners\AssignProduct;
+use App\Listeners\CreateDebtIfCredit;
 use App\Models\Tenants\Member;
+use App\Models\Tenants\Product;
 use App\Models\Tenants\Selling;
+use App\Models\Tenants\StockOpname;
+use App\Models\Tenants\User;
 use App\Observers\MemberObserver;
+use App\Observers\ProductObserver;
 use App\Observers\SellingObserver;
+use App\Observers\StockOpnameObserver;
+use App\Observers\TenantObserver;
+use App\Observers\UserObserver;
+use App\Tenant;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,6 +34,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        SellingCreated::class => [
+            AssignProduct::class,
+            CreateDebtIfCredit::class,
+        ],
+        RecalculateEvent::class => [
+            AdjustProduct::class,
+        ],
     ];
 
     /**
@@ -30,7 +50,11 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $observers = [
         Member::class => [MemberObserver::class],
-        Selling::class => [SellingObserver::class]
+        Selling::class => [SellingObserver::class],
+        Tenant::class => [TenantObserver::class],
+        Product::class => [ProductObserver::class],
+        User::class => [UserObserver::class],
+        StockOpname::class => [StockOpnameObserver::class],
     ];
 
     /**

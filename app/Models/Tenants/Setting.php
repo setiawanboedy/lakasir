@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * @mixin IdeHelperSetting
+ */
 class Setting extends Model
 {
     use HasFactory;
@@ -14,9 +17,19 @@ class Setting extends Model
 
     public static function get($key, $default = null)
     {
-        $setting = self::where('key', $key)->first();
+        $cacheKey = 'setting_'.$key;
+        $result = null;
+        if (! Cache::get('setting_'.$key)) {
+            $setting = self::where('key', $key)->first();
 
-        return $setting ? $setting->value : $default;
+            $result = $setting ? $setting->value : $default;
+
+            Cache::put($cacheKey, $result, now()->addMinutes(3 * 60));
+
+            return $result;
+        }
+
+        return Cache::get($cacheKey);
     }
 
     public static function set($key, $value)
@@ -29,6 +42,6 @@ class Setting extends Model
 
         // Update the value in cache
         $cacheKey = 'setting_'.$key;
-        Cache::put($cacheKey, $value, now()->addMinutes(60));
+        Cache::put($cacheKey, $value, now()->addMinutes(3 * 60));
     }
 }

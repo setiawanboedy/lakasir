@@ -7,22 +7,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin IdeHelperStock
+ */
 class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'stock',
-        'initial_price',
-        'selling_price',
-        'type',
-        'date',
-        'init_stock',
+    protected $guarded = ['id'];
+
+    protected $appends = [
+        'total_selling_price',
+        'total_initial_price',
     ];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function purchasing(): BelongsTo
+    {
+        return $this->belongsTo(Purchasing::class);
     }
 
     public function scopeProduct($query, $product_id)
@@ -45,5 +51,15 @@ class Stock extends Model
         return $this->where('type', 'in')
             ->where('stock', '>', 0)
             ->where('date', '<=', now());
+    }
+
+    public function totalSellingPrice(): Attribute
+    {
+        return Attribute::make(get: fn () => $this->selling_price * $this->init_stock);
+    }
+
+    public function totalInitialPrice(): Attribute
+    {
+        return Attribute::make(get: fn () => $this->initial_price * $this->init_stock);
     }
 }

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Facade;
 
 return [
 
+    'spa_mode' => env('SPA_MODE', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -84,7 +86,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => env('APP_LOCAL', 'en'),
 
     /*
     |--------------------------------------------------------------------------
@@ -200,6 +202,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\VoltServiceProvider::class,
         App\Providers\TenancyServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
     ],
 
     /*

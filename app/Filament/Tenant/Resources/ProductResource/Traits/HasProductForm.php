@@ -9,6 +9,7 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Set;
 use Filament\Support\RawJs;
 
 trait HasProductForm
@@ -17,7 +18,7 @@ trait HasProductForm
     {
         return FileUpload::make('hero_images')
             ->image()
-            ->label('Hero Images')
+            ->translateLabel()
             ->imageResizeMode('cover')
             ->imageCropAspectRatio('1:1')
             ->imageEditor()
@@ -36,12 +37,14 @@ trait HasProductForm
     public function generateCategoryFormComponent(): Select
     {
         return Select::make('category_id')
+            ->translateLabel()
             ->options(Category::pluck('name', 'id'))
             ->native(false)
             ->searchable()
             ->required()
             ->createOptionForm([
                 TextInput::make('name')
+                    ->translateLabel()
                     ->required(),
             ])
             ->createOptionUsing(function (array $data): int {
@@ -56,6 +59,7 @@ trait HasProductForm
     public function generateUnitFormComponent()
     {
         return TextInput::make('unit')
+            ->translateLabel()
             ->datalist(
                 Product::all()
                     ->pluck('unit')
@@ -68,7 +72,9 @@ trait HasProductForm
     public function generateSellingPriceFormComponent(): TextInput
     {
         return TextInput::make('selling_price')
+            ->translateLabel()
             ->mask(RawJs::make('$money($input)'))
+            ->gte('initial_price')
             ->stripCharacters(',')
             ->numeric()
             ->prefix(Setting::get('currency', 'IDR'))
@@ -78,7 +84,9 @@ trait HasProductForm
     public function generateInitialPriceFormComponent(): TextInput
     {
         return TextInput::make('initial_price')
+            ->translateLabel()
             ->mask(RawJs::make('$money($input)'))
+            ->lte('selling_price')
             ->stripCharacters(',')
             ->numeric()
             ->prefix(Setting::get('currency', 'IDR'))
@@ -88,6 +96,7 @@ trait HasProductForm
     public function generateNameFormComponent(): TextInput
     {
         return TextInput::make('name')
+            ->translateLabel()
             ->required()
             ->columnSpan(2);
     }
@@ -95,31 +104,55 @@ trait HasProductForm
     public function generateSkuFormComponent(): TextInput
     {
         return TextInput::make('sku')
-            ->required();
+            ->translateLabel()
+            ->hint(__('Leave it blank to auto generate'));
     }
 
     public function generateStockFormComponent(): TextInput
     {
         return TextInput::make('stock')
+            ->translateLabel()
             ->numeric()
+            ->disabled(function ($get) {
+                return $get('is_non_stock') || $get('type') == 'service';
+            })
             ->required();
     }
 
     public function generateTypeFormComponent(): Select
     {
         return Select::make('type')
+            ->translateLabel()
             ->options([
                 'product' => 'Product',
                 'service' => 'Service',
             ])
+            ->afterStateUpdated(function (mixed $state, Set $set) {
+                if ($state == 'service') {
+                    $set('stock', 0);
+                }
+            })
+            ->live()
             ->default('product')
             ->columnSpan(2)
             ->required();
     }
 
+    public function generateBarcodeFormComponent(): TextInput
+    {
+        return TextInput::make('barcode')
+            ->translateLabel();
+    }
+
     public function generateNonStockFormComponent(): Checkbox
     {
         return Checkbox::make('is_non_stock')
-            ->label('Non Stock');
+            ->translateLabel()
+            ->live()
+            ->afterStateUpdated(function ($state, $set) {
+                if ($state) {
+                    $set('stock', 0);
+                }
+            });
     }
 }
