@@ -71,7 +71,10 @@ class ProductImporter extends Importer
                 ->rules(['required', 'string']),
             ImportColumn::make('sku')
                 ->rules(['required', 'string', 'unique:products,sku'])
-                ->example('SKU123'),
+                ->example('SKU123/Kosongin'),
+            ImportColumn::make('sku')
+                ->rules(['required', 'string', 'unique:products,barcode'])
+                ->example('11111/Kosongin'),
             ImportColumn::make('stock')
                 ->rules(['required', 'numeric'])
                 ->numeric(),
@@ -87,6 +90,9 @@ class ProductImporter extends Importer
                 ->rules(['required', 'numeric'])
                 ->example('1500')
                 ->numeric(decimalPlaces: 2),
+            ImportColumn::make('expired')
+                ->rules(['required', 'numeric'])
+                ->example(now()->format('Y-m-d')),
             ImportColumn::make('type')
                 ->example('product/service')
                 ->rules(['required', 'in:product,service']),
