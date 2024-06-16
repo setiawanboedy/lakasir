@@ -34,7 +34,7 @@ use Filament\Facades\Filament;
               <x-heroicon-o-arrow-left class="h-4 w-4 text-gray-500"/>
             </a>
             <button
-              class="py-1 px-4 bg-[#ff6600] text-white rounded-lg"
+              class="py-1 px-4 bg-lakasir-primary text-white rounded-lg"
               x-on:click="$dispatch('open-modal', {id: 'edit-detail'})"
               >{{ __('Edit Detail') }}</button>
             <button class="py-1 px-4 bg-red-200 text-red-500 rounded-lg"
@@ -55,7 +55,7 @@ use Filament\Facades\Filament;
                   <p class="font-semibold"> {{ $item->product->name }}</p>
                   <div class="flex space-x-3 h-8">
                     <button
-                      class="!bg-[#ff6600] rounded-lg px-2 py-1"
+                      class="!bg-lakasir-primary rounded-lg px-2 py-1"
                       wire:click.stop="addCart( {{ $item->product_id  }} )"
                       wire:loading.attr="disabled"
                       >
@@ -80,7 +80,7 @@ use Filament\Facades\Filament;
                 </div>
               </div>
               <div class="items-center text-right space-y-2">
-                <p class="font-semibold text-[#ff6600]">{{ $item->price_format_money }}</p>
+                <p class="font-semibold text-lakasir-primary">{{ $item->price_format_money }}</p>
                 <div class="flex justify-end">
                 <x-filament::input.wrapper class="w-1/2">
                   <x-filament::input
@@ -96,7 +96,7 @@ use Filament\Facades\Filament;
                 </x-filament::input.wrapper>
                 </div>
                 @if($item->discount_price && $item->discount_price > 0)
-                  <p class="font-semibold text-[#ff6600]">{{ $item->final_price_format }}</p>
+                  <p class="font-semibold text-lakasir-primary">{{ $item->final_price_format }}</p>
                 @endif
               </div>
             </div>
@@ -118,7 +118,7 @@ use Filament\Facades\Filament;
           </div>
         </div>
         <button
-          class="py-4 px-2 bg-[#ff6600] text-white rounded-lg w-full"
+          class="py-4 px-2 bg-lakasir-primary text-white rounded-lg w-full"
           x-on:mousedown="$dispatch('open-modal', {id: 'proceed-the-payment'})"
           >{{ __('Proceed to payment') }}</button>
       </div>
@@ -148,8 +148,8 @@ use Filament\Facades\Filament;
             <template x-for="paymentMethod in paymentMethods">
               <div
                 x-on:click="cartDetail['payment_method_id'] = paymentMethod.id; $wire.cartDetail['payment_method_id'] = paymentMethod.id;"
-                class="cursor-pointer hover:scale-105 border border-[#ff6600] rounded-md px-4 py-2 flex justify-center dark:text-white text-sm"
-                :class="cartDetail['payment_method_id']  == paymentMethod.id ? 'bg-[#ff6600] text-white' : 'dark:bg-gray-900 '"
+                class="cursor-pointer hover:scale-105 border border-lakasir-primary rounded-md px-4 py-2 flex justify-center dark:text-white text-sm"
+                :class="cartDetail['payment_method_id']  == paymentMethod.id ? 'bg-lakasir-primary text-white' : 'dark:bg-gray-900 '"
                 x-text="paymentMethod.name.substring(0, 8)">
               </div>
             </template>
@@ -201,7 +201,7 @@ use Filament\Facades\Filament;
             </button>
             <button
               wire:loading.attr="disabled"
-              type="submit" class="col-span-3 bg-[#ff6600] hover:bg-[#ff6611] p-2 rounded-md text-white text-lg flex justify-center items-center gap-x-2">
+              type="submit" class="col-span-3 bg-lakasir-primary hover:bg-[#ff6611] p-2 rounded-md text-white text-lg flex justify-center items-center gap-x-2">
               <div wire:loading>
                 <x-filament::loading-indicator class="h-5 w-5"/>
               </div>
